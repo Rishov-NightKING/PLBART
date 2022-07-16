@@ -34,7 +34,7 @@ ARCH=mbart_${MODEL_SIZE}
 #PRETRAINED_MODEL_NAME=plbart_${MODEL_SIZE}.pt
 #PRETRAIN=${HOME_DIR}/pretrain/${PRETRAINED_MODEL_NAME}
 PRETRAINED_MODEL_NAME=checkpoint_best.pt
-PRETRAIN=${HOME_DIR}/pretrain/new_model/${PRETRAINED_MODEL_NAME}
+PRETRAIN=/content/drive/MyDrive/PLBART/results/R4R/${PRETRAINED_MODEL_NAME}
 
 SPM_MODEL=${HOME_DIR}/sentencepiece/sentencepiece.bpe.model
 
@@ -119,8 +119,8 @@ function fine_tune() {
 function generate() {
 
     #########################CHANGES############################
-    # model=${SAVE_DIR}/checkpoint_best.pt
-    model=${HOME_DIR}/pretrain/new_model/checkpoint_best.pt
+    model=${SAVE_DIR}/checkpoint_best.pt
+    # model=/content/drive/MyDrive/PLBART/results/R4R/checkpoint_best.pt
 
     FILE_PREF=${SAVE_DIR}/output
     RESULT_FILE=${SAVE_DIR}/result.txt
@@ -136,11 +136,19 @@ function generate() {
         --sacrebleu \
         --remove-bpe 'sentencepiece' \
         --max-len-b 200 \
-        --beam 5 \
+        --beam 10 \
+        --nbest 10 \
         --batch-size 4 \
         --langs $langs >$FILE_PREF
 
     cat $FILE_PREF | grep -P "^H" | sort -V | cut -f 3- | sed 's/\[${TARGET}\]//g' >$FILE_PREF.hyp
+
+    echo "\n\nTop n% Evaluation" >${RESULT_FILE}
+    python ${HOME_DIR}/evaluation/accuracy.py \
+        --ref $GOUND_TRUTH_PATH \
+        --pre $FILE_PREF.hyp \
+        --nbest 10 \
+        2>&1 | tee -a ${RESULT_FILE}
 
     echo "CodeXGlue Evaluation" >${RESULT_FILE}
     python ${HOME_DIR}/evaluation/bleu.py \
