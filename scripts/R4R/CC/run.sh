@@ -34,7 +34,7 @@ ARCH=mbart_${MODEL_SIZE}
 #PRETRAINED_MODEL_NAME=plbart_${MODEL_SIZE}.pt
 #PRETRAIN=${HOME_DIR}/pretrain/${PRETRAINED_MODEL_NAME}
 PRETRAINED_MODEL_NAME=checkpoint_best.pt
-PRETRAIN=/content/drive/MyDrive/PLBART/results/R4R/${PRETRAINED_MODEL_NAME}
+PRETRAIN=/content/drive/MyDrive/PLBART/results/R4R/checkpoint_last.pt
 
 SPM_MODEL=${HOME_DIR}/sentencepiece/sentencepiece.bpe.model
 
